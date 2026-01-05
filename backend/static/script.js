@@ -166,7 +166,15 @@ function renderChart(prefix, stats) {
         'Party wise matched': '#ec4899', // Pink
         'Unmatched': '#ef4444'           // Red
     };
-
+    // Short Label Map for cleaner X-axis
+    const shortLabels = {
+        'Exact Matched': 'Exact',
+        'Matched with multiple invoice in Portal data': 'Multi-Portal',
+        'Matched with multiple invoice in Books data': 'Multi-Books',
+        'GSTIN Wise matched': 'GSTIN',
+        'Party wise matched': 'Party',
+        'Unmatched': 'Unmatched'
+    };
     // ... (labels loop same as before) ...
 
     // Add Matched Categories
@@ -304,3 +312,4 @@ function setLoading(isLoading) {
         loader.style.display = 'none';
     }
 }
+
