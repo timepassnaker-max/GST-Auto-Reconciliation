@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GST Reconciliation AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css?v=2">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <main class="container">
+        <div class="glass-card">
+            <header>
+                <div class="logo-area">
+                    <div class="logo-icon">✨</div>
+                    <h1>GST Reco AI</h1>
+                </div>
+                <p class="subtitle">Intelligent Reconciliation System</p>
+            </header>
+
+
+            <div class="upload-zone" id="drop-zone">
+                <div class="upload-content">
+                    <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                        </path>
+                    </svg>
+                    <h3>Upload Excel File</h3>
+                    <p>Drag & drop or <span class="browse-link">browse</span></p>
+                    <input type="file" id="file-input" accept=".xlsx, .xls" hidden>
+                </div>
+                <div class="file-info" id="file-info" style="display: none;">
+                    <span class="file-name">filename.xlsx</span>
+                    <button class="remove-file" id="remove-file">×</button>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <a href="/api/template" class="template-btn">
+                    <span style="font-size: 1.2rem; margin-right: 0.5rem;">📥</span> Download Excel Template
+                </a>
+            </div>
+
+            <div class="actions">
+                <button id="reconcile-btn" class="primary-btn" disabled>
+                    <span class="btn-text">Reconcile Data</span>
+                    <span class="loader" style="display: none;"></span>
+                </button>
+            </div>
+
+            <div id="status-area" class="status-area"></div>
+
+            <!-- Dashboard -->
+            <div id="dashboard" class="dashboard">
+                <div class="stats-grid">
+                    <!-- Portal Stats -->
+                    <div class="stat-card">
+                        <div class="card-header">
+                            <div class="icon-box p-icon">🌐</div>
+                            <h3>Portal Data</h3>
+                        </div>
+
+                        <div class="kpi-row">
+                            <div class="kpi-item">
+                                <span class="kpi-label">Matched</span>
+                                <span class="kpi-value matched-val" id="p-matched">0</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-label">Unmatched</span>
+                                <span class="kpi-value unmatched-val" id="p-unmatched">0</span>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="chart-wrapper">
+                            <canvas id="p-chart"></canvas>
+                        </div>
+
+                        <div class="details-section">
+                            <h4>Match Breakdown</h4>
+                            <div class="detail-list" id="p-details"></div>
+                        </div>
+                    </div>
+
+                    <!-- Books Stats -->
+                    <div class="stat-card">
+                        <div class="card-header">
+                            <div class="icon-box b-icon">📖</div>
+                            <h3>Books Data</h3>
+                        </div>
+
+                        <div class="kpi-row">
+                            <div class="kpi-item">
+                                <span class="kpi-label">Matched</span>
+                                <span class="kpi-value matched-val" id="b-matched">0</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-label">Unmatched</span>
+                                <span class="kpi-value unmatched-val" id="b-unmatched">0</span>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="chart-wrapper">
+                            <canvas id="b-chart"></canvas>
+                        </div>
+
+                        <div class="details-section">
+                            <h4>Match Breakdown</h4>
+                            <div class="detail-list" id="b-details"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="download-section">
+                    <button id="download-btn" class="primary-btn">Download Excel Report 📥</button>
+                    <button id="reset-btn" class="secondary-btn">Process Another File 🔄</button>
+                </div>
+            </div>
+
+            <div
+                style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 2rem; line-height: 1.5;">
+                Developed by <span style="color: var(--primary); font-weight: 600;">Sanket Prajapati</span><br>
+                <span style="font-size: 0.7rem; opacity: 0.7;">v1.9 (Latest)</span>
+            </div>
+
+            <script src="/static/script.js?v=10"></script>
+
+            <section class="logic-summary-card">
+                <h3>
+                    <span class="icon">🤖</span>
+                    <span>Reconciliation Logic (5-Point Summary)</span>
+                </h3>
+                <div class="logic-list">
+                    <div class="logic-intro">
+                        The tool reconciles <strong>Portal data</strong> with <strong>Books data</strong> using
+                        <strong>five sequential matching rules</strong>, from strict to relaxed.
+                    </div>
+
+                    <div class="logic-item">
+                        <div class="logic-header"><span class="badge">1</span> Exact Match</div>
+                        <div class="logic-desc">Same GSTIN + Invoice No, tax values match (within tolerance)</div>
+                    </div>
+
+                    <div class="logic-item">
+                        <div class="logic-header"><span class="badge">2</span> Multiple Invoices in Portal</div>
+                        <div class="logic-desc">One Books invoice matches <strong>multiple Portal invoices</strong>
+                            (totals match)</div>
+                    </div>
+
+                    <div class="logic-item">
+                        <div class="logic-header"><span class="badge">3</span> Multiple Invoices in Books</div>
+                        <div class="logic-desc">One Portal invoice matches <strong>multiple Books invoices</strong>
+                            (totals match)</div>
+                    </div>
+
+                    <div class="logic-item">
+                        <div class="logic-header"><span class="badge">4</span> GSTIN-Wise Match</div>
+                        <div class="logic-desc">Same GSTIN, invoice number mismatch, values match</div>
+                    </div>
+
+                    <div class="logic-item">
+                        <div class="logic-header"><span class="badge">5</span> Party-Wise (Fuzzy) Match</div>
+                        <div class="logic-desc">Similar party name (≈85%), invoice details differ, party-level totals
+                            match</div>
+                    </div>
+                </div>
+                <div class="logic-footer">
+                    <p><strong>Tolerance:</strong> Taxable ± ₹5 | GST ± ₹2</p>
+                </div>
+            </section>
+        </div>
+    </main>
+</body>
+
+</html>
